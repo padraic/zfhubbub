@@ -1,0 +1,52 @@
+<?php echo $this->doctype() . "\n" ?>
+<html>
+<head>
+<?php
+echo $this->headMeta()->setIndent('    ') . "\n";
+echo $this->headTitle('Administration Backend')
+    ->setSeparator(' / ')->setIndent('    ') . "\n";
+echo $this->headLink()->setIndent('    ')
+    ->appendStylesheet('http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css')
+    ->appendStylesheet('http://yui.yahooapis.com/2.7.0/build/base/base-min.css')
+    ->appendStylesheet($this->includeModifiedDate('/css/style.css')) . "\n    ";
+echo $this->headScript()->prependFile(
+    'http://html5shiv.googlecode.com/svn/trunk/html5.js',
+    'text/javascript',
+    array('conditional'=>'IE')) . "\n";
+?>
+</head>
+<body>
+    <div id="doc" class="yui-t1">
+
+        <header id="hd" role="banner">
+            <h1><a href="/">Administration Backend</a></h1>
+        </header>
+
+        <div id="bd">
+            <div id="yui-main">
+                <div class="yui-b" role="main">
+                    <section id ="content" class="yui-g">
+                        <?php echo $this->layout()->content ?>
+                    </section>
+                </div>
+            </div>
+            <section class="yui-b">
+                <nav role="navigation" aria-labelledby="leftnav-label">
+                    <h2 id="leftnav-label">Menu</h2>
+                    <ul>
+                        <li><a href="#">Create Entry</a></li>
+                        <li><a href="#">Edit Entry</a></li>
+                    </ul>
+                </nav>
+            </section>
+        </div>
+
+        <footer id="ft" role="contentinfo">
+            <p>Copyright &copy; 2009 Pádraic Brady</p>
+            <p>Powered by <a href="http://www.survivethedeepend.com">ZFBlog
+            </a></p>
+        </footer>
+
+    </div>
+</body>
+</html>
