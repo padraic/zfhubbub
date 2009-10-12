@@ -10,7 +10,7 @@ class Admin_SubscribeController extends Zend_Controller_Action
 
     public function processAction()
     {
-        if (Zend_Uri::validate($_POST['topic_uri'])) {
+        if (Zend_Uri::check($_POST['topic_uri'])) {
             $result = $this->_subscribe($_POST['topic_uri']);
             if (!$result) {
                 $message = 'Subscribing to ' . $_POST['topic_uri']
@@ -45,12 +45,12 @@ class Admin_SubscribeController extends Zend_Controller_Action
         /**
          * Carry out subscription operation...
          */
+        $storage = new Zend_Feed_Pubsubhubbub_Storage_Filesystem;
+        $storage->setDirectory(APPLICATION_ROOT . '/store/subscriptions');
         $options = array(
             'topicUrl' => $feedTopicUri,
             'hubs' => $feedHubs,
-            'storage' => new Zend_Feed_Pubsubhubbub_Storage_Filesystem(
-                APPLICATION_ROOT . '/store'
-            ),
+            'storage' => $storage,
             'callbackUrl' => 'http://hub.survivethedeepend.com/callback'
         );
         $subscriber = new Zend_Feed_Pubsubhubbub_Subscriber($options);
