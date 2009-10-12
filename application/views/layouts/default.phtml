@@ -3,7 +3,7 @@
 <head>
 <?php
 echo $this->headMeta()->setIndent('    ') . "\n";
-echo $this->headTitle('Pádraic Brady\'s Blog')
+echo $this->headTitle('ZF Pubsubhubbub Aggregator')
     ->setSeparator(' / ')->setIndent('    ') . "\n";
 echo $this->headLink()->setIndent('    ')
     ->appendStylesheet('http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css')
@@ -20,15 +20,13 @@ echo $this->headScript()->prependFile(
 
         <header id="hd" role="banner">
             <hgroup>
-                <h1><a href="/">Pádraic Brady's Blog</a></h1>
-                <h2>Musings On PHP And Zend Framework</h2>
+                <h1><a href="/">ZF Pubsubhubbub Aggregator</a></h1>
+                <h2>Zend_Feed_Pubsubhubbub Test Application</h2>
             </hgroup>
             <nav role="navigation">
                 <ul>
                     <li><a href="/">Home</a></li>
                     <li><a href="#">About</a></li>
-                    <li><a href="#">Projects</a></li>
-                    <li><a href="#">Contact</a></li>
                 </ul>
             </nav>
         </header>
@@ -45,10 +43,10 @@ echo $this->headScript()->prependFile(
                 <nav role="navigation" aria-labelledby="leftnav-label">
                     <h2 id="leftnav-label">External Links</h2>
                     <ul>
-                        <li><a href="#">Survive The Deep End</a></li>
-                        <li><a href="#">Zend Framework</a></li>
-                        <li><a href="#">Planet-PHP</a></li>
-                        <li><a href="#">I'm on Twitter!</a></li>
+                        <li><a href="http://www.survivethedeepend.com">Survive The Deep End</a></li>
+                        <li><a href="http://framework.zend.com">Zend Framework</a></li>
+                        <li><a href="http://www.planet-php.net">Planet-PHP</a></li>
+                        <li><a href="http://www.twitter.com/padraicb">I'm on Twitter!</a></li>
                     </ul>
                 </nav>
             </section>
@@ -56,7 +54,7 @@ echo $this->headScript()->prependFile(
 
         <footer id="ft" role="contentinfo">
             <p>Copyright &copy; 2009 Pádraic Brady</p>
-            <p>Powered by <a href="http://www.survivethedeepend.com">ZFBlog
+            <p>Powered by <a href="http://framework.zend.com">Zend Framework
             </a></p>
         </footer>
 

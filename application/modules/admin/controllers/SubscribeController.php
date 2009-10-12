@@ -1,0 +1,63 @@
+<?php
+
+class Admin_SubscribeController extends Zend_Controller_Action
+{
+
+    public function indexAction()
+    {
+
+    }
+
+    public function processAction()
+    {
+        if (Zend_Uri::validate($_POST['topic_uri'])) {
+            $result = $this->_subscribe($_POST['topic_uri']);
+            if (!$result) {
+                $message = 'Subscribing to ' . $_POST['topic_uri']
+                 . ' failed. Either the feed was not Pubsubhubbub enabled'
+                 . ' or the subscription attempt failed';
+                $this->_helper->getHelper('')
+                    ->do();
+            }
+        }
+        $this->_helper->getHelper('Redirector')
+            ->gotoUrl('/admin/subscribe');
+    }
+
+    protected function _subscribe($topic)
+    {
+        $feed = Zend_Feed_Reader::import($topic);
+        /**
+         * Must use the URI of the feed contained in the feed itself in
+         * the original is no longer valid (e.g. feed moved and we just
+         * followed a redirect to the new URI)
+         */
+        $feedTopicUri = $feed->getLink();
+        /**
+         * The feed may advertise one or more Hub Endpoints we can use.
+         * We may subscribe to the Topic using one or more of the Hub
+         * Endpoints advertised (good idea in case a Hub goes down).
+         */
+        $feedHubs = $feed->getHubs();
+        if (is_null($feedHubs) || empty($feedHubs)) {
+            return false;
+        }
+        /**
+         * Carry out subscription operation...
+         */
+        $options = array(
+            'topicUrl' => $feedTopicUri,
+            'hubs' => $feedHubs,
+            'storage' => new Zend_Feed_Pubsubhubbub_Storage_Filesystem(
+                APPLICATION_ROOT . '/store'
+            ),
+            'callbackUrl' => 'http://hub.survivethedeepend.com/callback'
+        );
+        $subscriber = new Zend_Feed_Pubsubhubbub_Subscriber($options);
+        $subscriber->subscribeAll();
+        /**
+         * Do some checking for errors...
+         */
+    }
+
+}
