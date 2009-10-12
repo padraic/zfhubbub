@@ -16,8 +16,8 @@ class Admin_SubscribeController extends Zend_Controller_Action
                 $message = 'Subscribing to ' . $_POST['topic_uri']
                  . ' failed. Either the feed was not Pubsubhubbub enabled'
                  . ' or the subscription attempt failed';
-                $this->_helper->getHelper('')
-                    ->do();
+                $this->_helper->getHelper('FlashMessenger')
+                    ->addMessage();
             }
         }
         $this->_helper->getHelper('Redirector')
@@ -32,7 +32,7 @@ class Admin_SubscribeController extends Zend_Controller_Action
          * the original is no longer valid (e.g. feed moved and we just
          * followed a redirect to the new URI)
          */
-        $feedTopicUri = $feed->getLink();
+        $feedTopicUri = $feed->getFeedLink();
         /**
          * The feed may advertise one or more Hub Endpoints we can use.
          * We may subscribe to the Topic using one or more of the Hub
@@ -58,6 +58,7 @@ class Admin_SubscribeController extends Zend_Controller_Action
         /**
          * Do some checking for errors...
          */
+        // TODO
     }
 
 }

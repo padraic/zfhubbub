@@ -26,8 +26,8 @@ class ZFExt_Controller_Action_Helper_Spawn
         return $this;
     }
 
-    public function direct(array $parameters = null, $controller = null,
-    $action = null, $module = null)
+    public function direct(array $parameters = null, $action = null,
+    $controller = null, $module = null)
     {
         if (is_null($parameters)) {
             $parameters = array();
