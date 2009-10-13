@@ -56,7 +56,7 @@ class Zend_Feed_Pubsubhubbub_Storage_Filesystem implements Zend_Feed_Pubsubhubbu
      *
      * @param string $directory
      */
-    public function setDirectory()
+    public function setDirectory($directory)
     {
         if (!file_exists($directory) || !is_writable($directory)) {
             require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
