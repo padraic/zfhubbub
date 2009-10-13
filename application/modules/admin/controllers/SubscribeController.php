@@ -34,8 +34,7 @@ class Admin_SubscribeController extends Zend_Controller_Action
         try {
             $feed = Zend_Feed_Reader::import($topic);
         } catch (Zend_Exception $e) {
-            $this->_helper->getHelper('FlashMessenger')
-                ->addMessage('Topic could not be parsed as an RSS or Atom feed.');
+            return false;
         }
         /**
          * Must use the URI of the feed contained in the feed itself in
