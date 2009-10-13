@@ -5,7 +5,9 @@ class Admin_SubscribeController extends Zend_Controller_Action
 
     public function indexAction()
     {
-
+        $this->view->messages = $this->_helper
+            ->getHelper('FlashMessenger')
+            ->getMessages();
     }
 
     public function processAction()
@@ -17,8 +19,11 @@ class Admin_SubscribeController extends Zend_Controller_Action
                  . ' failed. Either the feed was not Pubsubhubbub enabled'
                  . ' or the subscription attempt failed';
                 $this->_helper->getHelper('FlashMessenger')
-                    ->addMessage();
+                    ->addMessage($message);
             }
+        } else {
+            $this->_helper->getHelper('FlashMessenger')
+                ->addMessage('Topic URI is invalid');
         }
         $this->_helper->getHelper('Redirector')
             ->gotoUrl('/admin/subscribe');
@@ -29,7 +34,7 @@ class Admin_SubscribeController extends Zend_Controller_Action
         $feed = Zend_Feed_Reader::import($topic);
         /**
          * Must use the URI of the feed contained in the feed itself in
-         * the original is no longer valid (e.g. feed moved and we just
+         * case the original is no longer valid (e.g. feed moved and we just
          * followed a redirect to the new URI)
          */
         $feedTopicUri = $feed->getFeedLink();
