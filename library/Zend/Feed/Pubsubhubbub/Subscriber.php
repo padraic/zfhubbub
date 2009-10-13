@@ -186,6 +186,9 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         if (array_key_exists('topicUrl', $config)) {
             $this->setTopicUrl($config['topicUrl']);
         }
+        if (array_key_exists('storage', $config)) {
+            $this->setStorage($config['storage']);
+        }
         if (array_key_exists('leaseSeconds', $config)) {
             $this->setLeaseSeconds($config['leaseSeconds']);
         }

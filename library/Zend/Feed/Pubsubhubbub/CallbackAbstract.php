@@ -63,6 +63,42 @@ abstract class Zend_Feed_Pubsubhubbub_CallbackAbstract
     protected $_subscriberCount = 1;
 
     /**
+     * Constructor; accepts an array or Zend_Config instance to preset
+     * options for the Subscriber without calling all supported setter
+     * methods in turn.
+     *
+     * @param array|Zend_Config $options Options array or Zend_Config instance
+     */
+    public function __construct($config = null)
+    {
+        if (!is_null($config)) {
+            $this->setConfig($config);
+        }
+    }
+
+    /**
+     * Process any injected configuration options
+     *
+     * @param array|Zend_Config $options Options array or Zend_Config instance
+     */
+    public function setConfig($config)
+    {
+        if ($config instanceof Zend_Config) {
+            $config = $config->toArray();
+        } elseif (!is_array($config)) {
+            require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
+            throw new Zend_Feed_Pubsubhubbub_Exception('Array or Zend_Config object'
+            . 'expected, got ' . gettype($config));
+        }
+        if (array_key_exists('callbackUrl', $config)) {
+            $this->setCallbackUrl($config['callbackUrl']);
+        }
+        if (array_key_exists('storage', $config)) {
+            $this->setStorage($config['storage']);
+        }
+    }
+
+    /**
      * Send the response, including all headers.
      * If you wish to handle this via Zend_Controller, use the getter methods
      * to retrieve any data needed to be set on your HTTP Response object, or
