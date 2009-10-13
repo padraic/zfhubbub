@@ -31,7 +31,12 @@ class Admin_SubscribeController extends Zend_Controller_Action
 
     protected function _subscribe($topic)
     {
-        $feed = Zend_Feed_Reader::import($topic);
+        try {
+            $feed = Zend_Feed_Reader::import($topic);
+        } catch (Zend_Exception $e) {
+            $this->_helper->getHelper('FlashMessenger')
+                ->addMessage('Topic could not be parsed as an RSS or Atom feed.');
+        }
         /**
          * Must use the URI of the feed contained in the feed itself in
          * case the original is no longer valid (e.g. feed moved and we just
@@ -54,7 +59,7 @@ class Admin_SubscribeController extends Zend_Controller_Action
         $storage->setDirectory(APPLICATION_ROOT . '/store/subscriptions');
         $options = array(
             'topicUrl' => $feedTopicUri,
-            'hubs' => $feedHubs,
+            'hubUrls' => $feedHubs,
             'storage' => $storage,
             'callbackUrl' => 'http://hub.survivethedeepend.com/callback'
         );
@@ -63,7 +68,7 @@ class Admin_SubscribeController extends Zend_Controller_Action
         /**
          * Do some checking for errors...
          */
-        // TODO
+        
     }
 
 }
