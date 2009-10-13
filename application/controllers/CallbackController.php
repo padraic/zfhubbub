@@ -9,7 +9,7 @@ class CallbackController extends Zend_Controller_Action
         $storage->setDirectory(APPLICATION_ROOT . '/store/subscriptions');
         $options = array(
             'storage' => $storage,
-            'callbackUrl' => 'http://hub.survivethedeepend.com/callback'
+            //'callbackUrl' => 'http://hub.survivethedeepend.com/callback'
         );
         $callback = new Zend_Feed_Pubsubhubbub_Subscriber_Callback($options);
         $callback->handle();

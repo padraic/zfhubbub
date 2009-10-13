@@ -25,6 +25,8 @@ class Admin_SubscribeController extends Zend_Controller_Action
             $this->_helper->getHelper('FlashMessenger')
                 ->addMessage('Topic URI is invalid');
         }
+        $this->_helper->getHelper('FlashMessenger')
+                ->addMessage('Subscription Completed');
         $this->_helper->getHelper('Redirector')
             ->gotoUrl('/admin/subscribe');
     }
@@ -67,7 +69,7 @@ class Admin_SubscribeController extends Zend_Controller_Action
         /**
          * Do some checking for errors...
          */
-        
+        return true;
     }
 
 }
