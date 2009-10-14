@@ -583,13 +583,14 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         $this->_errors = array();
         $this->_asyncHubs = array();
         foreach ($hubs as $url) {
+            if (array_key_exists($url, $this->_authentications)) {
+                $auth = $this->_authentications[$url];
+                $client->setAuth($auth[0], $auth[1]);
+            }
             $client->setUri($url);
             $client->setRawData($this->_getRequestParameters($url, $mode));
-            if (in_array($url, $this->_authentications)) {
-                $auth = $this->_authentications[$url];
-                $client->setAuth($auth[0], $auth[1], Zend_Http_Client::AUTH_BASIC);
-            }
             $response = $client->request();
+            var_dump($client->getLastRequest());
             if ($response->getStatus() !== 204
             && $response->getStatus() !== 202) {
                 $this->_errors[] = array(
