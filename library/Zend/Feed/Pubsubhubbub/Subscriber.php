@@ -665,8 +665,9 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         $this->getStorage()->setToken($key, hash('sha256', $token));
         $params['hub.verify_token'] = $token;
         // Note: query string only usable with PuSH 0.2 Hubs
-        $params['hub.callback'] = $this->getCallbackUrl()
-            . '?xhub.subscription=' . Zend_Feed_Pubsubhubbub::urlencode($key); // double encoding necessary?
+        $params['hub.callback'] = $this->getCallbackUrl();
+        $params['xhub.subscription'] = $key;
+            //. '?xhub.subscription=' . Zend_Feed_Pubsubhubbub::urlencode($key);
         if ($mode == 'subscribe') {
             $params['hub.lease_seconds'] = $this->getLeaseSeconds();
         }
