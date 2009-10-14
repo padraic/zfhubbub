@@ -57,8 +57,8 @@ class CallbackController extends Zend_Controller_Action
         $options = $this->getInvokeArg('bootstrap')->getGetOpt();
 
         $path = APPLICATION_ROOT . '/store/updates/' . $key;
-        exit($path);
         $data = file_get_contents($path);
+        exit($data);
         $feed = Zend_Feed_Reader::importString($data);
         /**
          * TEMP: Improve when database added
