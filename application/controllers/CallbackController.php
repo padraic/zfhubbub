@@ -34,7 +34,7 @@ class CallbackController extends Zend_Controller_Action
         }
         file_put_contents(
             APPLICATION_ROOT . '/log/' . microtime(true),
-            print_r($_GET, true)
+            print_r($_SERVER['QUERY_STRING'], true)
         );
         /**
          * Send final response to Client
