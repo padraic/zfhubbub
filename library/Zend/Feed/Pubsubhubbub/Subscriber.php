@@ -198,7 +198,7 @@ class Zend_Feed_Pubsubhubbub_Subscriber
             $this->setParameters($config['parameters']);
         }
         if (array_key_exists('authentications', $config)) {
-            $this->setAuthentications($config['authentications']);
+            $this->addAuthentications($config['authentications']);
         }
         if (array_key_exists('preferredVerificationMode', $config)) {
             $this->setPreferredVerificationMode(
