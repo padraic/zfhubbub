@@ -33,7 +33,7 @@ class CallbackController extends Zend_Controller_Action
         }
         file_put_contents(
             APPLICATION_ROOT . '/log/' . microtime(true),
-            print_r($callback->->getHttpResponse(), true)
+            print_r($callback->getHttpResponse(), true)
         );
         /**
          * Send final response to Client
