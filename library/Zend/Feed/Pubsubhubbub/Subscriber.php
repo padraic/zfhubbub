@@ -600,7 +600,7 @@ class Zend_Feed_Pubsubhubbub_Subscriber
             $client->setUri($url);
             $client->setRawData($this->_getRequestParameters($url, $mode));
             $response = $client->request();
-            var_dump($client->getLastRequest());
+            echo($client->getLastRequest());
             if ($response->getStatus() !== 204
             && $response->getStatus() !== 202) {
                 $this->_errors[] = array(
