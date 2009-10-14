@@ -69,6 +69,9 @@ class Admin_SubscribeController extends Zend_Controller_Action
         /**
          * Do some checking for errors...
          */
+        if (!$subscriber->isSuccess()) {
+            var_dump($subscriber->getErrors()); exit;
+        }
         return true;
     }
 
