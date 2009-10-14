@@ -398,7 +398,7 @@ class Zend_Feed_Pubsubhubbub_Subscriber
     
     public function addAuthentications(array $authentications)
     {
-        foreach ($$authentications as $authentication) {
+        foreach ($authentications as $authentication) {
             $this->addAuthentication($hubUrl, $authentication);
         }
     }
