@@ -29,7 +29,7 @@ class CallbackController extends Zend_Controller_Action
         if ($callback->hasFeedUpdate()) {
             $data = $callback->getFeedUpdate();
             $key = md5($data);
-            file_put_contents(APPLICATION_ROOT . 'store/updates/' . $key, $data);
+            file_put_contents(APPLICATION_ROOT . '/store/updates/' . $key, $data);
             $this->_helper->getHelper('Spawn')
                 ->setScriptPath(APPLICATION_ROOT . '/scripts/zfrun.php');
             $this->_helper->spawn(
