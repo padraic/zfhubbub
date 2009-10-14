@@ -195,6 +195,7 @@ class Zend_Feed_Pubsubhubbub_HttpResponse
     public function setBody($content)
     {
         $this->_body = (string) $content;
+        $this->setHeader('content-length', strlen($content));
     }
 
     /**
