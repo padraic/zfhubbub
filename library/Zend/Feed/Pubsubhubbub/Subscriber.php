@@ -656,6 +656,9 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         $params['hub.topic'] = $this->getTopicUrl();
         if ($this->getPreferredVerificationMode()
         == Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_SYNC) {
+            /**
+             * TEMP: This is a Superfeedr dirty hack - must remove async reference
+             */
             $vmodes = array(Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_SYNC);//,Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_ASYNC);
         } else {
             $vmodes = array(Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_ASYNC,
