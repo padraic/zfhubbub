@@ -419,7 +419,7 @@ class Zend_Feed_Pubsubhubbub_Subscriber
     
     public function usePathParameter($bool = true)
     {
-        $this->_usePathParameter = $bool
+        $this->_usePathParameter = $bool;
     }
 
     /**
