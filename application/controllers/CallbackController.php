@@ -5,6 +5,7 @@ class CallbackController extends Zend_Controller_Action
 
     public function indexAction()
     {
+        $this->_helper->viewRenderer->setNoRender();
         $storage = new Zend_Feed_Pubsubhubbub_Storage_Filesystem;
         $storage->setDirectory(APPLICATION_ROOT . '/store/subscriptions');
         $options = array(
