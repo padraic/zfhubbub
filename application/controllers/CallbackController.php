@@ -31,7 +31,7 @@ class CallbackController extends Zend_Controller_Action
                 array('--key'=>$key), 'process', 'callback', 'admin'
             );
         }
-        file_put_contents(APPLICATION_ROOT . '/log/' . microtime(true), print_r($callback->->getHttpResponse()), true);
+        file_put_contents(APPLICATION_ROOT . '/log/' . microtime(true), print_r($callback->->getHttpResponse()), true));
         /**
          * Send final response to Client
          */
