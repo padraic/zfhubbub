@@ -585,7 +585,7 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         foreach ($hubs as $url) {
             $client->setUri($url);
             $client->setRawData($this->_getRequestParameters($url, $mode));
-            if (in_array($url, $this->_authentications) {
+            if (in_array($url, $this->_authentications)) {
                 $auth = $this->_authentications[$url];
                 $client->setAuth($auth[0], $auth[1], Zend_Http_Client::AUTH_BASIC);
             }
