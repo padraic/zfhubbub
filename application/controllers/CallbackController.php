@@ -51,12 +51,13 @@ class CallbackController extends Zend_Controller_Action
         if (!$this->getRequest() instanceof ZFExt_Controller_Request_Cli) {
             throw new Exception('Access denied from HTTP');
         }
+        exit('here');
         $this->getInvokeArg('bootstrap')->addOptionRules(
             array('key|k=s' => 'File keyname for task data (required)')
         );
         $options = $this->getInvokeArg('bootstrap')->getGetOpt();
 
-        $path = APPLICATION_ROOT . 'store/updates/' . $key;
+        $path = APPLICATION_ROOT . '/store/updates/' . $key;
         echo $path;
         $data = file_get_contents($path);
         $feed = Zend_Feed_Reader::importString($data);
