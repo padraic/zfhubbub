@@ -391,15 +391,15 @@ class Zend_Feed_Pubsubhubbub_Subscriber
             require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
             throw new Zend_Feed_Pubsubhubbub_Exception('Invalid parameter "url"'
                 .' of "' . $url . '" must be a non-empty string and a valid'
-                .'URL');
+                .' URL');
         }
         $this->_authentications[$url] = $authentication;
     }
     
     public function addAuthentications(array $authentications)
     {
-        foreach ($authentications as $authentication) {
-            $this->addAuthentication($hubUrl, $authentication);
+        foreach ($authentications as $url => $authentication) {
+            $this->addAuthentication($url, $authentication);
         }
     }
 
