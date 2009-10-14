@@ -62,7 +62,10 @@ class Admin_SubscribeController extends Zend_Controller_Action
             'topicUrl' => $feedTopicUri,
             'hubUrls' => $feedHubs,
             'storage' => $storage,
-            'callbackUrl' => 'http://hub.survivethedeepend.com/callback'
+            'callbackUrl' => 'http://hub.survivethedeepend.com/callback',
+            'authentications' => array(
+                'http://superfeedr.com/hubbub' => array('padraicb','password')
+            )
         );
         $subscriber = new Zend_Feed_Pubsubhubbub_Subscriber($options);
         $subscriber->subscribeAll();

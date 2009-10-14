@@ -149,6 +149,8 @@ class Zend_Feed_Pubsubhubbub_Subscriber
      */
     protected $_storage = null;
 
+    protected $_authentications = array();
+
     /**
      * Constructor; accepts an array or Zend_Config instance to preset
      * options for the Subscriber without calling all supported setter
@@ -194,6 +196,9 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         }
         if (array_key_exists('parameters', $config)) {
             $this->setParameters($config['parameters']);
+        }
+        if (array_key_exists('authentications', $config)) {
+            $this->setAuthentications($config['authentications']);
         }
         if (array_key_exists('preferredVerificationMode', $config)) {
             $this->setPreferredVerificationMode(
@@ -379,6 +384,33 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         $this->_hubUrls = array_unique($this->_hubUrls);
         return $this->_hubUrls;
     }
+    
+    public function addAuthentication($url, array $authentication)
+    {
+        if (empty($url) || !is_string($url) || !Zend_Uri::check($url)) {
+            require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
+            throw new Zend_Feed_Pubsubhubbub_Exception('Invalid parameter "url"'
+                .' of "' . $url . '" must be a non-empty string and a valid'
+                .'URL');
+        }
+        $this->_authentications[$url] = $authentication;
+    }
+    
+    public function addAuthentications(array $authentications)
+    {
+        foreach ($$authentications as $authentication) {
+            $this->addAuthentication($hubUrl, $authentication);
+        }
+    }
+
+    public function removeAuthentication()
+    {
+    }
+    
+    public function getAuthentications()
+    {
+        return $this->_authentications;
+    }
 
     /**
      * Add an optional parameter to the (un)subscribe requests
@@ -553,6 +585,10 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         foreach ($hubs as $url) {
             $client->setUri($url);
             $client->setRawData($this->_getRequestParameters($url, $mode));
+            if (in_array($url, $this->_authentications) {
+                $auth = $this->_authentications[$url];
+                $client->setAuth($auth[0], $auth[1], Zend_Http_Client::AUTH_BASIC);
+            }
             $response = $client->request();
             if ($response->getStatus() !== 204
             && $response->getStatus() !== 202) {
