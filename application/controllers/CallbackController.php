@@ -57,6 +57,7 @@ class CallbackController extends Zend_Controller_Action
         $options = $this->getInvokeArg('bootstrap')->getGetOpt();
 
         $path = APPLICATION_ROOT . 'store/updates/' . $key;
+        echo $path;
         $data = file_get_contents($path);
         $feed = Zend_Feed_Reader::importString($data);
         /**
@@ -70,6 +71,7 @@ class CallbackController extends Zend_Controller_Action
             'modified_date' => $feed->getDateModified(),
             'link' => $feed->getLink()
         );
+        echo APPLICATION_ROOT . '/store/updates/' . md5($store['id']);
         file_put_contents(APPLICATION_ROOT . '/store/updates/' . md5($store['id']), serialize($store));
         unlink($path);
     }
