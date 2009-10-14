@@ -41,7 +41,7 @@ if (!defined('APPLICATION_ENV')) {
 
 $application = new Zend_Application(
     APPLICATION_ENV,
-    APPLICATION_ROOT . '/config/cli.ini'
+    APPLICATION_PATH . '/configs/cli.ini'
 );
 
 $application->bootstrap()->run();
