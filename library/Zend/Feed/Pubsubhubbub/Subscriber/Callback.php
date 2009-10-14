@@ -49,6 +49,13 @@ class Zend_Feed_Pubsubhubbub_Subscriber_Callback
      * @var string
      */
     protected $_feedUpdate = null;
+    
+    protected $_useVerifyToken = null;
+    
+    public function setVerifyToken($token)
+    {
+        $this->_useVerifyToken = $token;
+    }
 
     /**
      * Handle any callback from a Hub Server responding to a subscription or
@@ -183,7 +190,7 @@ class Zend_Feed_Pubsubhubbub_Subscriber_Callback
      */
     protected function _hasValidVerifyToken(array $httpGetData = null, $checkValue = true)
     {
-        $verifyTokenKey = $this->_detectVerifyTokenKey();
+        $verifyTokenKey = $this->_detectVerifyTokenKey($httpGetData);
         if (empty($verifyTokenKey)) {
             return false;
         }
@@ -207,8 +214,14 @@ class Zend_Feed_Pubsubhubbub_Subscriber_Callback
      *
      * @return string
      */
-    protected function _detectVerifyTokenKey()
+    protected function _detectVerifyTokenKey(array $httpGetData = null)
     {
+        if (isset($this->_useVerifyToken)) {
+            return $this->_useVerifyToken;
+        }
+        if (isset($httpGetData['xhub_subscription'])) {
+            return $httpGetData['xhub_subscription'];
+        }
         $params = $this->_parseQueryString();
         if (isset($params['xhub.subscription'])) {
             return rawurldecode($params['xhub.subscription']);

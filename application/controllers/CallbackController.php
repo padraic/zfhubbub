@@ -9,11 +9,15 @@ class CallbackController extends Zend_Controller_Action
         $this->_helper->viewRenderer->setNoRender();
         $storage = new Zend_Feed_Pubsubhubbub_Storage_Filesystem;
         $storage->setDirectory(APPLICATION_ROOT . '/store/subscriptions');
-        $options = array(
-            'storage' => $storage,
-            //'callbackUrl' => 'http://hub.survivethedeepend.com/callback'
-        );
-        $callback = new Zend_Feed_Pubsubhubbub_Subscriber_Callback($options);
+        $callback = new Zend_Feed_Pubsubhubbub_Subscriber_Callback;
+        $callback->setStorage($storage);
+        /**
+         * At time of writing, no fully PuSH 0.2 compatible Hubs exist
+         * so we must detect the expected verify token (if used) and set
+         * it explicitly. This is used by all callback requests and is set
+         * when subscribing.
+         */
+        $callback->setVerifyToken($this->_getParam('subkey'));
         $callback->handle();
         /**
          * Check if a feed update was received and process it
@@ -34,7 +38,7 @@ class CallbackController extends Zend_Controller_Action
         }
         file_put_contents(
             APPLICATION_ROOT . '/log/' . microtime(true),
-            print_r($_SERVER['QUERY_STRING'], true)
+            print_r($this->_getParam('subkey'), true)
         );
         /**
          * Send final response to Client

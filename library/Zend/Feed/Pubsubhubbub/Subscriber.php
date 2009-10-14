@@ -150,6 +150,8 @@ class Zend_Feed_Pubsubhubbub_Subscriber
     protected $_storage = null;
 
     protected $_authentications = array();
+    
+    protected $_usePathParameter = false;
 
     /**
      * Constructor; accepts an array or Zend_Config instance to preset
@@ -199,6 +201,9 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         }
         if (array_key_exists('authentications', $config)) {
             $this->addAuthentications($config['authentications']);
+        }
+        if (array_key_exists('usePathParameter', $config)) {
+            $this->usePathParameter($config['usePathParameter']);
         }
         if (array_key_exists('preferredVerificationMode', $config)) {
             $this->setPreferredVerificationMode(
@@ -410,6 +415,11 @@ class Zend_Feed_Pubsubhubbub_Subscriber
     public function getAuthentications()
     {
         return $this->_authentications;
+    }
+    
+    public function usePathParameter($bool = true)
+    {
+        $this->_usePathParameter = $bool
     }
 
     /**
@@ -665,9 +675,13 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         $this->getStorage()->setToken($key, hash('sha256', $token));
         $params['hub.verify_token'] = $token;
         // Note: query string only usable with PuSH 0.2 Hubs
-        $params['hub.callback'] = $this->getCallbackUrl();
-        $params['xhub.subscription'] = $key;
-            //. '?xhub.subscription=' . Zend_Feed_Pubsubhubbub::urlencode($key);
+        if (!$this->_usePathParameter) {
+            $params['hub.callback'] = $this->getCallbackUrl()
+            . '?xhub.subscription=' . Zend_Feed_Pubsubhubbub::urlencode($key);
+        } else {
+            $params['hub.callback'] = $this->getCallbackUrl()
+            . '/' . Zend_Feed_Pubsubhubbub::urlencode($key);
+        }
         if ($mode == 'subscribe') {
             $params['hub.lease_seconds'] = $this->getLeaseSeconds();
         }
