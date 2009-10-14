@@ -656,8 +656,7 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         $params['hub.topic'] = $this->getTopicUrl();
         if ($this->getPreferredVerificationMode()
         == Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_SYNC) {
-            $vmodes = array(Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_SYNC,
-            Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_ASYNC);
+            $vmodes = array(Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_SYNC);//,Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_ASYNC);
         } else {
             $vmodes = array(Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_ASYNC,
             Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_SYNC);
