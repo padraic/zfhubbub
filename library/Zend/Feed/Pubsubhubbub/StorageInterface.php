@@ -37,15 +37,13 @@ interface Zend_Feed_Pubsubhubbub_StorageInterface
 {
 
     /**
-     * Store data which is associated with the given Hub Server URL and Topic
-     * URL and where that data relates to the given Type. The Types supported
-     * include: "subscription", "unsubscription". These Type strings may also
-     * be referenced by constants on the Zend_Feed_Pubsubhubbub class.
+     * Store data which is associated with a Subscription. The key is the
+     * unique tuple (Topic URL, Callback URL) concatenated and hashed using MD5.
      *
      * @param string $key
      * @param string $token
      */
-    public function setToken($key, $token);
+    public function setSubscription($key, array $data);
 
     /**
      * Get data associated with the given key
@@ -53,7 +51,7 @@ interface Zend_Feed_Pubsubhubbub_StorageInterface
      * @param string $key
      * @return string
      */
-    public function getToken($key);
+    public function getSubscription($key);
 
     /**
      * Checks for the existence of a record agreeing with the given key
@@ -61,14 +59,14 @@ interface Zend_Feed_Pubsubhubbub_StorageInterface
      * @param string $key
      * @return bool
      */
-    public function hasToken($key);
+    public function hasSubscription($key);
 
     /**
      * Deletes a record with the given key
      *
      * @param string $key
      */
-    public function removeToken($key);
+    public function removeSubscription($key);
 
     /**
      * If implemented: deletes all records

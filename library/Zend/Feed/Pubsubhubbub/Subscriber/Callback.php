@@ -50,11 +50,32 @@ class Zend_Feed_Pubsubhubbub_Subscriber_Callback
      */
     protected $_feedUpdate = null;
     
-    protected $_useVerifyToken = null;
+    /**
+     * Holds a manually set subscription key (i.e. identifies a unique
+     * subscription) which is typical when it is not passed in the query string
+     * but is part of the Callback URL path, requiring manual retrieval e.g.
+     * using a route and the Zend_Controller_Action::_getParam() method.
+     *
+     * @var string
+     */
+    protected $_subscriptionKey = null;
     
-    public function setVerifyToken($token)
+    /**
+     * After verification, this is set to the verified subscription's data.
+     *
+     * @var array
+     */
+    protected $_currentSubscriptionData = null;
+    
+    /**
+     * Set a subscription key to use for the current callback request manually.
+     * Required if usePathParameter is enabled for the Subscriber.
+     *
+     * @param string $key
+     */
+    public function setSubscriptionKey($key)
     {
-        $this->_useVerifyToken = $token;
+        $this->_subscriptionKey = $key;
     }
 
     /**
@@ -89,7 +110,10 @@ class Zend_Feed_Pubsubhubbub_Subscriber_Callback
          * Handle any (un)subscribe confirmation requests
          */
         } elseif ($this->isValidHubVerification($httpGetData)) {
+            $data = $this->_currentSubscriptionData;
             $this->getHttpResponse()->setBody($httpGetData['hub_challenge']);
+            $data['verified'] = 1;
+            $this->getStorage()->setSubscription($data['id'], $data);
         /**
          * Hey, C'mon! We tried everything else!
          */
@@ -194,15 +218,18 @@ class Zend_Feed_Pubsubhubbub_Subscriber_Callback
         if (empty($verifyTokenKey)) {
             return false;
         }
-        $verifyTokenExists = $this->getStorage()->hasToken($verifyTokenKey);
+        $verifyTokenExists = $this->getStorage()->hasSubscription($verifyTokenKey);
         if (!$verifyTokenExists) {
             return false;
         }
         if ($checkValue) {
-            $verifyToken = $this->getStorage()->getToken($verifyTokenKey);
+            $data = $this->getStorage()->getSubscription($verifyTokenKey);
+            $verifyToken = $data['verify_token'];
             if ($verifyToken !== hash('sha256', $httpGetData['hub_verify_token'])) {
                 return false;
             }
+            $this->_currentSubscriptionData = $data;
+            return true;
         }
         return true;
     }
@@ -216,12 +243,21 @@ class Zend_Feed_Pubsubhubbub_Subscriber_Callback
      */
     protected function _detectVerifyTokenKey(array $httpGetData = null)
     {
-        if (isset($this->_useVerifyToken)) {
-            return $this->_useVerifyToken;
+        /**
+         * Available when sub keys encoding in Callback URL path
+         */
+        if (isset($this->_subscriptionKey)) {
+            return $this->_subscriptionKey;
         }
+        /**
+         * Available only if allowed by PuSH 0.2 Hubs
+         */
         if (isset($httpGetData['xhub_subscription'])) {
             return $httpGetData['xhub_subscription'];
         }
+        /**
+         * Available (possibly) if corrupted in transit and not part of $_GET
+         */
         $params = $this->_parseQueryString();
         if (isset($params['xhub.subscription'])) {
             return rawurldecode($params['xhub.subscription']);

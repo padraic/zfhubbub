@@ -19,13 +19,6 @@
  */
 
 /**
- * NOTE: For simplicity when implementing, this class WILL send all parameters
- * noted in the specification as OPTIONAL. Opt-outs will be added to
- * configuration possibilities in the near future, or this behaviour will
- * reverse if they are absolutely unnecessary.
- */
-
-/**
  * NOTE: Specification refers to verify_token as "opaque token". This has been
  * interpreted as a token whose content is not readily apparent. A precise
  * example/definition will be requested on the mailing lists. For now, a simple
@@ -55,7 +48,7 @@
  * Subscription. Workflow in this regard is considered uncertain and is
  * being queried on the mailing list for resolution...
  * The token DOES NOT verify the source of the update - only that the source
- * has an active subscription key
+ * has an active subscription for us.
  */
 
 /**
@@ -105,12 +98,12 @@ class Zend_Feed_Pubsubhubbub_Subscriber
 
     /**
      * The number of seconds for which the subscriber would like to have the
-     * subscription active. Defaults to specified Hub default of 2592000
-     * seconds (30 days) if not supplied.
+     * subscription active. Defaults to null, i.e. not sent, to setup a
+     * permanent subscription if possible.
      *
      * @var int
      */
-    protected $_leaseSeconds = 2592000;
+    protected $_leaseSeconds = null;
 
     /**
      * The preferred verification mode (sync or async). By default, this
@@ -149,8 +142,30 @@ class Zend_Feed_Pubsubhubbub_Subscriber
      */
     protected $_storage = null;
 
+    /**
+     * An array of authentication credentials for HTTP Basic Authentication
+     * if required by specific Hubs. The array is indexed by Hub Endpoint URI
+     * and the value is a simple array of the username and password to apply.
+     *
+     * @var array
+     */
     protected $_authentications = array();
     
+    /**
+     * Tells the Subscriber to append any subscription identifier to the path
+     * of the base Callback URL. E.g. an identifier "subkey1" would be added
+     * to the callback URL "http://www.example.com/callback" to create a subscription
+     * specific Callback URL of "http://www.example.com/callback/subkey1".
+     *
+     * This is required for all Hubs using the Pubsubhubbub 0.1 Specification.
+     * It should be manually intercepted and passed to the Callback class using
+     * Zend_Feed_Pubsubhubbub_Subscriber_Callback::setSubscriptionKey(). Will
+     * require a route in the form "callback/:subkey" to allow the parameter be
+     * retrieved from an action using the Zend_Controller_Action::_getParam()
+     * method.
+     *
+     * @var string
+     */
     protected $_usePathParameter = false;
 
     /**
@@ -656,10 +671,8 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         $params['hub.topic'] = $this->getTopicUrl();
         if ($this->getPreferredVerificationMode()
         == Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_SYNC) {
-            /**
-             * TEMP: This is a Superfeedr dirty hack - must remove async reference
-             */
-            $vmodes = array(Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_SYNC);//,Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_ASYNC);
+            $vmodes = array(Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_SYNC,
+            Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_ASYNC);
         } else {
             $vmodes = array(Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_ASYNC,
             Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_SYNC);
@@ -670,11 +683,10 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         }
         /**
          * Establish a persistent verify_token and attach key to callback
-         * URL's path
+         * URL's path/querystring
          */
-        $key = $this->_generateVerifyTokenKey($mode, $hubUrl);
+        
         $token = $this->_generateVerifyToken();
-        $this->getStorage()->setToken($key, hash('sha256', $token));
         $params['hub.verify_token'] = $token;
         // Note: query string only usable with PuSH 0.2 Hubs
         if (!$this->_usePathParameter) {
@@ -684,7 +696,7 @@ class Zend_Feed_Pubsubhubbub_Subscriber
             $params['hub.callback'] = $this->getCallbackUrl()
             . '/' . Zend_Feed_Pubsubhubbub::urlencode($key);
         }
-        if ($mode == 'subscribe') {
+        if ($mode == 'subscribe' && !is_null($this->getLeaseSeconds())) {
             $params['hub.lease_seconds'] = $this->getLeaseSeconds();
         }
         // TODO: hub.secret not currently supported
@@ -692,6 +704,19 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         foreach ($optParams as $name => $value) {
             $params[$name] = $value;
         }
+        // store subscription to storage
+        $key = $this->_generateSubscriptionKey($params);
+        $data = array(
+            'id' => $key,
+            'topic_url' => $params['hub.topic'],
+            'hub_url' => $hubUrl,
+            'lease_seconds' => isset($params['hub.lease_seconds']) ? $params['hub.lease_seconds'] : null,
+            'verify_token' => hash('sha256', $params['hub.verify_token']),
+            'secret_token' => null,
+            'expiry_time' => isset($params['hub.lease_seconds']) ? time() + $params['hub.lease_seconds'] : null,
+            'verified' => 0
+        );
+        $this->getStorage()->setSubscription($key, $data);
         return $this->_toByteValueOrderedString(
             $this->_urlEncode($params)
         );
@@ -720,10 +745,10 @@ class Zend_Feed_Pubsubhubbub_Subscriber
      * @param string $hubUrl The Hub Server URL for which this token will apply
      * @return string
      */
-    protected function _generateVerifyTokenKey($type, $hubUrl)
+    protected function _generateSubscriptionKey(array $params)
     {
-        $keyBase = $hubUrl . $this->getTopicUrl();
-        $key = sha1($keyBase);
+        $keyBase = $params['hub.topic'] . $params['hub.callback'];
+        $key = md5($keyBase);
         return $key;
     }
 
@@ -764,12 +789,6 @@ class Zend_Feed_Pubsubhubbub_Subscriber
         uksort($params, 'strnatcmp');
         foreach ($params as $key => $value) {
             if (is_array($value)) {
-                /**
-                 * We skip sorting values simply because per spec, the order
-                 * of these values imposes an order of preference we should
-                 * not interfere with.
-                 */
-                //natsort($value);
                 foreach ($value as $keyduplicate) {
                     $return[] = $key . '=' . $keyduplicate;
                 }

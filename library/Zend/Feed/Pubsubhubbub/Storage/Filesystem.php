@@ -19,12 +19,6 @@
  */
 
 /**
- * NOTE: Mainly for testing; will add a other versions at some point using
- * Zend_Db and Zend_Cache. This is largely a simple keypair store anyway.
- * If stuck, use the interface to roll your own...
- */
-
-/**
  * @see Zend_Feed_Pubsubhubbub_StorageInterface
  */
 require_once 'Zend/Feed/Pubsubhubbub/StorageInterface.php';
@@ -75,7 +69,7 @@ class Zend_Feed_Pubsubhubbub_Storage_Filesystem implements Zend_Feed_Pubsubhubbu
     public function getDirectory()
     {
         if ($this->_directory === null) {
-            $this->_directory = $this->_getTempDirectory();
+            $this->_directory = sys_get_temp_dir();
         }
         return $this->_directory;
     }
@@ -109,9 +103,6 @@ class Zend_Feed_Pubsubhubbub_Storage_Filesystem implements Zend_Feed_Pubsubhubbu
             return false;
         }
         $data = unserialize($serialized);
-        //if (empty($data)) {
-        //    return false;
-        //}
         return $data;
     }
 
@@ -257,71 +248,6 @@ class Zend_Feed_Pubsubhubbub_Storage_Filesystem implements Zend_Feed_Pubsubhubbu
     {
         return preg_replace(array("/\+/", "/\//", "/\=/"),
             array('_', '.', ''), base64_encode(sha1($key)));
-    }
-
-    /**
-     * Detect and return the path to a writable temporary directory.
-     * Harder than it looks!
-     *
-     * @see Zend_File_Transfer_Adapter_Abstract for the original impl.
-     *
-     * @return string
-     * @throws Zend_Feed_Pubsubhubbub_Exception if unable to determine directory
-     */
-    protected function _getTempDirectory()
-    {
-        $tmpdir = array();
-        foreach (array($_ENV, $_SERVER) as $tab) {
-            foreach (array('TMPDIR', 'TEMP', 'TMP', 'windir', 'SystemRoot') as $key) {
-                if (isset($tab[$key])) {
-                    if (($key == 'windir') or ($key == 'SystemRoot')) {
-                        $dir = realpath($tab[$key] . '\\temp');
-                    } else {
-                        $dir = realpath($tab[$key]);
-                    }
-                    if ($this->_isGoodTmpDir($dir)) {
-                        return $dir;
-                    }
-                }
-            }
-        }
-        if (function_exists('sys_get_temp_dir')) {
-            $dir = sys_get_temp_dir();
-            if ($this->_isGoodTmpDir($dir)) {
-        	    return $dir;
-            }
-        }
-        $tempFile = tempnam(md5(uniqid(rand(), TRUE)), '');
-        if ($tempFile) {
-            $dir = realpath(dirname($tempFile));
-            unlink($tempFile);
-            if ($this->_isGoodTmpDir($dir)) {
-                return $dir;
-            }
-        }
-        if ($this->_isGoodTmpDir('/tmp')) {
-            return '/tmp';
-        }
-        if ($this->_isGoodTmpDir('\\temp')) {
-            return '\\temp';
-        }
-        require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
-        throw new Zend_Feed_Pubsubhubbub_Exception('Could not determine temp'
-        . ' directory, please specify a cache_dir manually');
-    }
-
-    /**
-     * Verify if the given temporary directory is readable and writable
-     *
-     * @param $dir temporary directory
-     * @return boolean true if the directory is ok
-     */
-    protected function _isGoodTmpDir($dir)
-    {
-        if (is_readable($dir) && is_writable($dir)) {
-            return true;
-        }
-    	return false;
     }
 
 }
