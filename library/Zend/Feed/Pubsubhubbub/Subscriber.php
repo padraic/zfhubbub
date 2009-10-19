@@ -677,10 +677,7 @@ class Zend_Feed_Pubsubhubbub_Subscriber
             $vmodes = array(Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_ASYNC,
             Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_SYNC);
         }
-        $params['hub.verify'] = array();
-        foreach($vmodes as $vmode) {
-            $params['hub.verify'][] = $vmode;
-        }
+        $params['hub.verify'] = implode(',', $vmodes);
         /**
          * Establish a persistent verify_token and attach key to callback
          * URL's path/querystring
