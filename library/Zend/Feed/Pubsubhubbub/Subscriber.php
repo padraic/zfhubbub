@@ -685,7 +685,7 @@ class Zend_Feed_Pubsubhubbub_Subscriber
          * Establish a persistent verify_token and attach key to callback
          * URL's path/querystring
          */
-        
+        $key = $this->_generateSubscriptionKey($params);
         $token = $this->_generateVerifyToken();
         $params['hub.verify_token'] = $token;
         // Note: query string only usable with PuSH 0.2 Hubs
@@ -705,7 +705,6 @@ class Zend_Feed_Pubsubhubbub_Subscriber
             $params[$name] = $value;
         }
         // store subscription to storage
-        $key = $this->_generateSubscriptionKey($params);
         $data = array(
             'id' => $key,
             'topic_url' => $params['hub.topic'],
