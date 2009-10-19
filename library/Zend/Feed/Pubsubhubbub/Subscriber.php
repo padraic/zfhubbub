@@ -239,7 +239,7 @@ class Zend_Feed_Pubsubhubbub_Subscriber
             require_once 'Zend/Feed/Pubsubhubbub/Exception.php';
             throw new Zend_Feed_Pubsubhubbub_Exception('Invalid parameter "url"'
                 .' of "' . $url . '" must be a non-empty string and a valid'
-                .'URL');
+                .' URL');
         }
         $this->_topicUrl = $url;
     }
@@ -677,7 +677,10 @@ class Zend_Feed_Pubsubhubbub_Subscriber
             $vmodes = array(Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_ASYNC,
             Zend_Feed_Pubsubhubbub::VERIFICATION_MODE_SYNC);
         }
-        $params['hub.verify'] = implode(',', $vmodes);
+        $params['hub.verify'] = array();
+        foreach($vmodes as $vmode) {
+            $params['hub.verify'][] = $vmode;
+        }
         /**
          * Establish a persistent verify_token and attach key to callback
          * URL's path/querystring

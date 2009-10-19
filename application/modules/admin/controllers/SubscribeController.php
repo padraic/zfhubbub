@@ -20,13 +20,14 @@ class Admin_SubscribeController extends Zend_Controller_Action
                  . ' or the subscription attempt failed';
                 $this->_helper->getHelper('FlashMessenger')
                     ->addMessage($message);
+            } else {
+                $this->_helper->getHelper('FlashMessenger')
+                ->addMessage('Subscription Completed');
             }
         } else {
             $this->_helper->getHelper('FlashMessenger')
                 ->addMessage('Topic URI is invalid');
         }
-        $this->_helper->getHelper('FlashMessenger')
-                ->addMessage('Subscription Completed');
         $this->_helper->getHelper('Redirector')
             ->gotoUrl('/admin/subscribe');
     }
@@ -44,6 +45,9 @@ class Admin_SubscribeController extends Zend_Controller_Action
          * followed a redirect to the new URI)
          */
         $feedTopicUri = $feed->getFeedLink();
+        if (empty($feedTopicUri)) {
+            $feedTopicUri = $topic;
+        }
         /**
          * The feed may advertise one or more Hub Endpoints we can use.
          * We may subscribe to the Topic using one or more of the Hub
