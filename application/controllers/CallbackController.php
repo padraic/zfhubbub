@@ -33,7 +33,7 @@ class CallbackController extends Zend_Controller_Action
             $this->_helper->getHelper('Spawn')
                 ->setScriptPath(APPLICATION_ROOT . '/scripts/zfrun.php');
             $this->_helper->spawn(
-                array('--key'=>$key), 'process', 'callback', 'admin'
+                array('--key'=>$key), 'process', 'callback'
             );
         }
         file_put_contents(
